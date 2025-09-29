@@ -1,11 +1,9 @@
 // src/theme/theme.ts
 
-// Type definitions (optional but recommended)
 export interface Theme {
   colors: {
     primary: string;
     secondary: string;
-    accent: string;
     background: string;
     surface: string;
     text: {
@@ -14,11 +12,21 @@ export interface Theme {
       muted: string;
       inverse: string;
     };
-    border: string;
-    error: string;
-    success: string;
-    warning: string;
-    info: string;
+    border: {
+      solid: string;
+      gradient: string;
+    };
+    gradients: {
+      ill: string;
+      background1: string;
+      background2: string;
+    };
+    states: {
+      error: string;
+      success: string;
+      warning: string;
+      info: string;
+    };
   };
   typography: {
     fontFamily: string;
@@ -85,22 +93,46 @@ export interface Theme {
 
 export const theme: Theme = {
   colors: {
-    primary: "#2563eb", // Blue-600
-    secondary: "#9333ea", // Purple-600
-    accent: "#f59e0b", // Amber-500
-    background: "#f9fafb", // Gray-50
-    surface: "#ffffff", // White
+    primary: "#3EA2FF", // Bright Blue
+    secondary: "#FF3C80", // Pink
+
+    background: "#FFFFFF",
+    surface: "#FFFFFF",
+
     text: {
       primary: "#111827", // Gray-900
       secondary: "#374151", // Gray-700
-      muted: "#6b7280", // Gray-500
-      inverse: "#ffffff",
+      muted: "#6B7280", // Gray-500
+      inverse: "#FFFFFF",
     },
-    border: "#e5e7eb", // Gray-200
-    error: "#dc2626", // Red-600
-    success: "#16a34a", // Green-600
-    warning: "#ca8a04", // Yellow-600
-    info: "#0284c7", // Sky-600
+
+    border: {
+      solid: "#E5E7EB", // Light Gray
+      gradient: "linear-gradient(90deg, #3EA2FF 0%, #FF3C80 100%)",
+    },
+
+    gradients: {
+      ill: `
+        radial-gradient(741.08% 81.63% at 77.28% -93.49%, #F7D4E7 0%, rgba(255, 255, 255, 0) 100%),
+        linear-gradient(180deg, #BFDCFE 28.84%, #EBF3FD 100%)
+      `,
+      background1: `
+        radial-gradient(235.78% 49.76% at -12.5% 110.55%, rgba(251, 86, 145, 0.20) 0%, rgba(255, 255, 255, 0) 100%),
+        radial-gradient(150.9% 61.56% at 89.65% -24.61%, rgba(95, 176, 254, 0.20) 0%, rgba(255, 255, 255, 0) 100%),
+        #FFFFFF
+      `,
+      background2: `
+        radial-gradient(20% 20% at center, #5FB0FE 0%, #FFFFFF 100%),
+        radial-gradient(20% 20% at center, #FB5691 0%, #FFFFFF 100%)
+      `,
+    },
+
+    states: {
+      error: "#DC2626", // Red-600
+      success: "#16A34A", // Green-600
+      warning: "#CA8A04", // Yellow-600
+      info: "#0284C7", // Sky-600
+    },
   },
 
   typography: {
