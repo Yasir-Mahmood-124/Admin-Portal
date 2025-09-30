@@ -20,7 +20,7 @@ import {
   Email as EmailIcon,
 } from "@mui/icons-material";
 import { AgGridReact } from "ag-grid-react";
-import type { ColDef } from "ag-grid-community";
+import type { ColDef, GridApi } from "ag-grid-community";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
 
 import "ag-grid-community/styles/ag-grid.css";
@@ -54,10 +54,14 @@ const ReviewDocumentsView = () => {
   const [searchText, setSearchText] = useState("");
 
   const gridRef = useRef<AgGridReact<ReviewDocument>>(null);
+  const apiRef = useRef<GridApi | null>(null); // ✅ Holds GridApi safely
 
-  const handleSearch = useCallback(() => {
-    gridRef.current?.api.setQuickFilter(searchText);
-  }, [searchText]);
+const handleSearch = useCallback(() => {
+  if (apiRef.current) {
+    apiRef.current.setGridOption("quickFilterText", searchText);
+  }
+}, [searchText]);
+
 
   // ✅ File download helper
   const downloadFile = (filename: string, base64Data: string) => {
@@ -143,7 +147,7 @@ const ReviewDocumentsView = () => {
         ),
       },
       {
-        headerName: "CreatedAt", // ✅ changed heading
+        headerName: "CreatedAt",
         field: "createdAt",
         flex: 1.2,
         minWidth: 170,
@@ -281,9 +285,10 @@ const ReviewDocumentsView = () => {
           animateRows
           rowHeight={55}
           headerHeight={60}
-          domLayout="autoHeight" // ✅ makes it responsive
+          domLayout="autoHeight"
           onGridReady={(params) => {
-            params.api.sizeColumnsToFit(); // ✅ fit columns to avoid horizontal scroll
+            apiRef.current = params.api; // ✅ Save GridApi here
+            params.api.sizeColumnsToFit();
             window.addEventListener("resize", () => params.api.sizeColumnsToFit());
           }}
         />
