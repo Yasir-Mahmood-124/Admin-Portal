@@ -5,6 +5,7 @@ import { organizationsApi } from "./services/organizationsApi";
 import { projectsApi } from "./services/projectsApi";
 import { reviewDocumentsApi } from "./services/reviewDocumentsApi";
 import { adminAnalyticsApi } from "./services/get_admin_analytics";
+import { organizationProjectsApi } from "./services/get_organization_projects";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     [projectsApi.reducerPath]: projectsApi.reducer,
     [reviewDocumentsApi.reducerPath]: reviewDocumentsApi.reducer,
     [adminAnalyticsApi.reducerPath]: adminAnalyticsApi.reducer,
+    [organizationProjectsApi.reducerPath]: organizationProjectsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -21,6 +23,7 @@ export const store = configureStore({
         projectsApi.middleware,
         reviewDocumentsApi.middleware,
         adminAnalyticsApi.middleware,
+        organizationProjectsApi.middleware,
     ),
 });
 
