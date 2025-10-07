@@ -1,47 +1,60 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   CircularProgress,
   Typography,
-  Divider,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  List,
-  ListItem,
-  ListItemText,
+  Tab,
+  Tabs,
+  Paper,
+  Alert,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AgGridReact } from "ag-grid-react";
-import type { ColDef } from "ag-grid-community";
-import {
-  ModuleRegistry,
-  AllCommunityModule,
-} from "ag-grid-community";
-
-import "ag-grid-community/styles/ag-theme-quartz.css"; // ✅ only Quartz theme
-
+import FolderIcon from "@mui/icons-material/Folder";
+import BusinessIcon from "@mui/icons-material/Business";
+import PeopleIcon from "@mui/icons-material/People";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import {
   useGetAll_projectsQuery,
-  Project,
 } from "@/redux/services/projectsApi";
 import {
   useGetOrganizationProjectsQuery,
-  Organization,
 } from "@/redux/services/get_organization_projects";
 import {
   useGetUserOrganizationProjectsQuery,
 } from "@/redux/services/get_user_organization_project";
-
 import { theme } from "@/theme/theme";
 
-// ✅ Only community module
-ModuleRegistry.registerModules([AllCommunityModule]);
+// Import child components
+import AllProjectsGrid from "./AllProjectsGrid";
+import OrganizationsTree from "./OrganizationsTree";
+import UsersTree from "./UsersTree";
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+const TabPanel = (props: TabPanelProps) => {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+    </div>
+  );
+};
 
 const ProjectsView = () => {
-  // Queries
+  const [activeTab, setActiveTab] = useState(0);
+
+  // API Queries
   const {
     data: allProjectsData,
     error: allProjectsError,
@@ -60,66 +73,11 @@ const ProjectsView = () => {
     isLoading: userOrgProjectsLoading,
   } = useGetUserOrganizationProjectsQuery();
 
-  // ✅ Columns for All Projects
-  const allProjectsCols: ColDef<Project>[] = useMemo(
-    () => [
-      { headerName: "📌 Project Name", field: "project_name", flex: 2, minWidth: 200 },
-      {
-        headerName: "📅 Created At",
-        field: "createdAt",
-        flex: 1.5,
-        minWidth: 200,
-        valueFormatter: (params) =>
-          params.value ? new Date(params.value).toLocaleString() : "—",
-      },
-      {
-        headerName: "🏢 Organization ID",
-        field: "organization_id",
-        flex: 2,
-        minWidth: 250,
-      },
-    ],
-    []
-  );
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
 
-  // ✅ Columns for Organizations
-  const orgCols: ColDef<Organization>[] = useMemo(
-    () => [
-      {
-        headerName: "🏢 Organization Name",
-        field: "organization_name",
-        flex: 2,
-        minWidth: 200,
-      },
-      {
-        headerName: "👤 User ID",
-        field: "user_id",
-        flex: 1.5,
-        minWidth: 200,
-      },
-      {
-        headerName: "📅 Created At",
-        field: "createdAt",
-        flex: 1.5,
-        minWidth: 200,
-        valueFormatter: (params) =>
-          params.value ? new Date(params.value).toLocaleString() : "—",
-      },
-      {
-        headerName: "📌 Projects",
-        field: "projects",
-        flex: 3,
-        minWidth: 300,
-        valueFormatter: (params) =>
-          params.value && params.value.length > 0
-            ? params.value.map((p: Project) => p.project_name).join(", ")
-            : "—",
-      },
-    ],
-    []
-  );
-
-  // ✅ Loading State
+  // Loading State
   if (allProjectsLoading || orgProjectsLoading || userOrgProjectsLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="80vh">
@@ -128,121 +86,94 @@ const ProjectsView = () => {
     );
   }
 
-  // ✅ Error State
+  // Error State
   if (allProjectsError || orgProjectsError || userOrgProjectsError) {
     return (
-      <Box textAlign="center" mt={10} color={theme.colors.states.error}>
-        <Typography variant="h6">⚠ Failed to load data.</Typography>
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">
+          Failed to load data. Please try again later.
+        </Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ height: "100%", width: "100%", padding: theme.spacing(4) }}>
+    <Box sx={{ width: "100%", height: "100%", p: 3 }}>
       {/* Header */}
-      <Typography
-        variant="h5"
+      <Paper
+        elevation={0}
         sx={{
-          fontWeight: theme.typography.fontWeight.bold,
-          color: theme.colors.text.primary,
-          mb: 2,
+          p: 3,
+          mb: 3,
+          background: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.secondary} 100%)`,
+          borderRadius: 2,
         }}
       >
-        📂 Projects Dashboard
-      </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+          <DashboardIcon sx={{ fontSize: 32, color: "#fff", mr: 2 }} />
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: theme.typography.fontWeight.bold,
+              color: "#fff",
+            }}
+          >
+            Projects Management Dashboard
+          </Typography>
+        </Box>
+        <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.9)" }}>
+          Manage and view all projects, organizations, and users
+        </Typography>
+      </Paper>
 
-      {/* All Projects Section */}
-      <Typography
-        variant="h6"
-        sx={{ color: theme.colors.primary, fontWeight: "bold", mb: 1 }}
-      >
-        📌 All Projects ({allProjectsData?.total_projects || 0})
-      </Typography>
-      <Box className="ag-theme-quartz" sx={{ height: "60vh", mb: 4 }}>
-        <AgGridReact<Project>
-          rowData={allProjectsData?.projects || []}
-          columnDefs={allProjectsCols}
-          pagination
-          paginationPageSize={10}
-          animateRows
-        />
-      </Box>
+      {/* Tabs Navigation */}
+      <Paper elevation={1} sx={{ borderRadius: 2, mb: 2 }}>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            "& .MuiTab-root": {
+              textTransform: "none",
+              fontSize: "1rem",
+              fontWeight: 600,
+              minHeight: 64,
+            },
+          }}
+        >
+          <Tab
+            icon={<FolderIcon />}
+            iconPosition="start"
+            label={`All Projects (${allProjectsData?.total_projects || 0})`}
+          />
+          <Tab
+            icon={<BusinessIcon />}
+            iconPosition="start"
+            label={`Organizations (${orgProjectsData?.total_organizations || 0})`}
+          />
+          <Tab
+            icon={<PeopleIcon />}
+            iconPosition="start"
+            label={`Users (${userOrgProjectsData?.total_users || 0})`}
+          />
+        </Tabs>
+      </Paper>
 
-      <Divider sx={{ my: 4 }} />
+      {/* Tab Panels */}
+      <TabPanel value={activeTab} index={0}>
+        <AllProjectsGrid projects={allProjectsData?.projects || []} />
+      </TabPanel>
 
-      {/* Organizations with Projects Section */}
-      <Typography
-        variant="h6"
-        sx={{ color: theme.colors.primary, fontWeight: "bold", mb: 1 }}
-      >
-        🏢 Organizations and Their Projects (
-        {orgProjectsData?.total_organizations || 0})
-      </Typography>
-      <Box className="ag-theme-quartz" sx={{ height: "70vh", mb: 4 }}>
-        <AgGridReact<Organization>
-          rowData={orgProjectsData?.organizations || []}
-          columnDefs={orgCols}
-          pagination
-          paginationPageSize={10}
-          animateRows
-        />
-      </Box>
+      <TabPanel value={activeTab} index={1}>
+        <OrganizationsTree organizations={orgProjectsData?.organizations || []} />
+      </TabPanel>
 
-      <Divider sx={{ my: 4 }} />
-
-      {/* Users → Organizations → Projects (Accordion version) */}
-      <Typography
-        variant="h6"
-        sx={{ color: theme.colors.primary, fontWeight: "bold", mb: 2 }}
-      >
-        👤 Users → Organizations → Projects (
-        {userOrgProjectsData?.total_users || 0})
-      </Typography>
-
-      {userOrgProjectsData?.users && userOrgProjectsData.users.length > 0 ? (
-  <Box>
-    {userOrgProjectsData.users.map((user: any, uIndex: number) => {
-      const userLabel =
-        user.name ||
-        `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() ||
-        user.email;
-
-      return (
-        <Accordion key={user.id ?? `user-${uIndex}`}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">{userLabel}</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {user.organizations.map((org: any) => (
-              <Box key={org.id} mb={2}>
-                <Typography variant="subtitle1" fontWeight="bold">
-                  Organization: {org.organization_name}
-                </Typography>
-                <List dense>
-                  {org.projects.map((proj: any) => (
-                    <ListItem key={proj.id}>
-                      <ListItemText primary={`Project: ${proj.project_name}`} />
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            ))}
-          </AccordionDetails>
-        </Accordion>
-      );
-    })}
-  </Box>
-) : (
-  <Typography variant="body2" color="text.secondary">
-    No users available
-  </Typography>
-)}
-
+      <TabPanel value={activeTab} index={2}>
+        <UsersTree users={userOrgProjectsData?.users || []} />
+      </TabPanel>
     </Box>
   );
 };
 
 export default ProjectsView;
-
-
-
