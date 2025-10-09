@@ -51,6 +51,7 @@ import { theme } from "@/theme/theme";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
+
 // User Details Dialog Component
 const UserDetailsDialog = ({
   open,
@@ -401,7 +402,7 @@ const UsersView = () => {
         field: "status",
         flex: 1,
         minWidth: 120,
-        filter: "agSetColumnFilter",
+        // filter: "agSetColumnFilter",
         cellRenderer: (params: any) => {
           const status = params.value?.toLowerCase() || "unknown";
           const colorMap: Record<string, string> = {
@@ -441,7 +442,7 @@ const UsersView = () => {
         field: "onboarding_status",
         flex: 1,
         minWidth: 130,
-        filter: "agSetColumnFilter",
+        // filter: "agSetColumnFilter",
         cellRenderer: (params: any) => {
           const isCompleted = Boolean(params.value);
           return (
@@ -839,6 +840,7 @@ const UsersView = () => {
       ref={gridRef}
       rowData={filteredData}
       columnDefs={columnDefs}
+      theme="legacy"
       pagination
       paginationPageSize={15}
       paginationPageSizeSelector={[10, 15, 25, 50]}

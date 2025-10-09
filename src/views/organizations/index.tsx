@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useMemo, useState, useCallback, useRef, useEffect } from "react";
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+} from "react";
 import {
   Box,
   CircularProgress,
@@ -147,9 +153,7 @@ const OrganizationsView = () => {
     let orgs = data?.organizations || [];
 
     if (startDate)
-      orgs = orgs.filter(
-        (o) => new Date(o.createdAt) >= new Date(startDate)
-      );
+      orgs = orgs.filter((o) => new Date(o.createdAt) >= new Date(startDate));
 
     if (endDate)
       orgs = orgs.filter((o) => new Date(o.createdAt) <= new Date(endDate));
@@ -211,7 +215,6 @@ const OrganizationsView = () => {
       },
       {
         headerName: "Actions",
-        field: "actions",
         flex: 0.5,
         minWidth: 100,
         cellRenderer: (params: any) => (
@@ -302,10 +305,14 @@ const OrganizationsView = () => {
                 Organizations Management
               </Typography>
               <Box display="flex" alignItems="center" gap={1}>
-                <OrgCountIcon sx={{ fontSize: 20, color: theme.colors.text.muted }} />
+                <OrgCountIcon
+                  sx={{ fontSize: 20, color: theme.colors.text.muted }}
+                />
                 <Typography variant="body2" color={theme.colors.text.muted}>
                   Total Organizations:{" "}
-                  <strong style={{ color: theme.colors.primary }}>{totalOrgs}</strong>
+                  <strong style={{ color: theme.colors.primary }}>
+                    {totalOrgs}
+                  </strong>
                 </Typography>
               </Box>
             </Box>
@@ -399,6 +406,7 @@ const OrganizationsView = () => {
             paginationPageSize={10}
             rowHeight={55}
             headerHeight={50}
+            theme="legacy"
             animateRows
           />
         </Box>
@@ -410,7 +418,7 @@ const OrganizationsView = () => {
         onClose={() => setDialogOpen(false)}
       />
 
-            {/* Custom Styling */}
+      {/* Custom Styling */}
       <style jsx global>{`
         .custom-ag-theme {
           --ag-font-family: ${theme.typography.fontFamily};

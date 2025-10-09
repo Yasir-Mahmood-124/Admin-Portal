@@ -21,7 +21,11 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import ClearIcon from "@mui/icons-material/Clear";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { AgGridReact } from "ag-grid-react";
-import type { ColDef, GridReadyEvent, IDateFilterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GridReadyEvent,
+  IDateFilterParams,
+} from "ag-grid-community";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { theme } from "@/theme/theme";
@@ -61,7 +65,9 @@ const AllProjectsGrid: React.FC<AllProjectsGridProps> = ({ projects }) => {
   const handleExportCSV = () => {
     if (gridApi) {
       gridApi.exportDataAsCsv({
-        fileName: `projects_export_${new Date().toISOString().split("T")[0]}.csv`,
+        fileName: `projects_export_${
+          new Date().toISOString().split("T")[0]
+        }.csv`,
       });
     }
   };
@@ -115,7 +121,7 @@ const AllProjectsGrid: React.FC<AllProjectsGridProps> = ({ projects }) => {
         minWidth: 200,
         filter: "agTextColumnFilter",
         floatingFilter: true,
-        cellStyle: { fontWeight: 600 },
+        cellStyle: { fontWeight: 600, fontFamily: "", fontSize: "" },
         filterParams: {
           buttons: ["reset", "apply"],
           closeOnApply: true,
@@ -128,7 +134,7 @@ const AllProjectsGrid: React.FC<AllProjectsGridProps> = ({ projects }) => {
         minWidth: 250,
         filter: "agTextColumnFilter",
         floatingFilter: true,
-        cellStyle: { fontFamily: "monospace", fontSize: "0.9rem" },
+        cellStyle: { fontFamily: "monospace", fontSize: "0.9rem", fontWeight: "" },
         filterParams: {
           buttons: ["reset", "apply"],
           closeOnApply: true,
@@ -141,7 +147,7 @@ const AllProjectsGrid: React.FC<AllProjectsGridProps> = ({ projects }) => {
         minWidth: 250,
         filter: "agTextColumnFilter",
         floatingFilter: true,
-        cellStyle: { fontFamily: "monospace", fontSize: "0.9rem" },
+        cellStyle: { fontFamily: "monospace", fontSize: "0.9rem", fontWeight: "" },
         filterParams: {
           buttons: ["reset", "apply"],
           closeOnApply: true,
@@ -164,12 +170,9 @@ const AllProjectsGrid: React.FC<AllProjectsGridProps> = ({ projects }) => {
             const cellDate = new Date(cellValue);
             cellDate.setHours(0, 0, 0, 0);
             filterLocalDateAtMidnight.setHours(0, 0, 0, 0);
-            
-            if (cellDate < filterLocalDateAtMidnight) {
-              return -1;
-            } else if (cellDate > filterLocalDateAtMidnight) {
-              return 1;
-            }
+
+            if (cellDate < filterLocalDateAtMidnight) return -1;
+            if (cellDate > filterLocalDateAtMidnight) return 1;
             return 0;
           },
         } as IDateFilterParams,
@@ -266,6 +269,7 @@ const AllProjectsGrid: React.FC<AllProjectsGridProps> = ({ projects }) => {
           rowData={filteredProjects}
           columnDefs={columnDefs}
           defaultColDef={defaultColDef}
+          theme="legacy"
           pagination
           paginationPageSize={20}
           paginationPageSizeSelector={[10, 20, 50, 100]}
@@ -276,7 +280,7 @@ const AllProjectsGrid: React.FC<AllProjectsGridProps> = ({ projects }) => {
           ensureDomOrder
           suppressMenuHide
           suppressMovableColumns={false}
-          enableRangeSelection
+          // enableRangeSelection
         />
       </Box>
     </Paper>

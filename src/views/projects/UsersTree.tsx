@@ -32,9 +32,10 @@ import EmailIcon from "@mui/icons-material/Email";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { theme } from "@/theme/theme";
 
+
 interface Project {
-  createdAt: string;
-  project_name: string;
+  createdAt: string | null;
+  project_name: string | null;
   id: string;
   organization_id: string;
 }
@@ -42,7 +43,7 @@ interface Project {
 interface Organization {
   id: string;
   organization_name: string;
-  createdAt: string;
+  createdAt: string | null;
   projects: Project[];
 }
 
@@ -102,7 +103,7 @@ const UsersTree: React.FC<UsersTreeProps> = ({ users }) => {
           user.organizations.some(
             (org) =>
               org.organization_name.toLowerCase().includes(search) ||
-              org.projects.some((p) => p.project_name.toLowerCase().includes(search))
+              org.projects.some((p) => p.project_name && p.project_name.toLowerCase().includes(search))
           )
         );
       });
@@ -386,9 +387,11 @@ const UsersTree: React.FC<UsersTreeProps> = ({ users }) => {
                                           </Box>
                                           <Chip
                                             icon={<CalendarTodayIcon />}
-                                            label={new Date(
+                                            label={
                                               project.createdAt
-                                            ).toLocaleDateString()}
+                                                ? new Date(project.createdAt).toLocaleDateString()
+                                                : "N/A"
+                                            }
                                             size="small"
                                             variant="outlined"
                                           />
