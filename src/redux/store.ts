@@ -8,6 +8,7 @@ import { adminAnalyticsApi } from "./services/get_admin_analytics";
 import { organizationProjectsApi } from "./services/get_organization_projects";
 import { userOrganizationProjectsApi } from "./services/get_user_organization_project";
 import { balanceApi } from "./services/get-balance";
+import { recentActivityApi } from "./services/recent-activity";
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     [organizationProjectsApi.reducerPath]: organizationProjectsApi.reducer,
     [userOrganizationProjectsApi.reducerPath]: userOrganizationProjectsApi.reducer,
     [balanceApi.reducerPath]: balanceApi.reducer,
+    [recentActivityApi.reducerPath]: recentActivityApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -30,6 +32,7 @@ export const store = configureStore({
         organizationProjectsApi.middleware,
         userOrganizationProjectsApi.middleware,
         balanceApi.middleware,
+        recentActivityApi.middleware,
     ),
 });
 
