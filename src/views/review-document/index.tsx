@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useMemo, useState, useCallback, useRef } from "react";
@@ -14,11 +13,13 @@ import {
   useGetAll_review_documentsQuery,
   useGet_review_documentMutation,
 } from "@/redux/services/reviewDocumentsApi";
+import { useReturnReviewDocumentMutation } from "@/redux/services/return-review-document";
 
 // Import sub-components
 import PageHeader from "./PageHeader";
 import FilterBar from "./FilterBar";
 import DataGrid from "./DataGrid";
+import ReviewDocumentModal from "./ReviewDocumentModal";
 import { getColumnDefinitions, type ReviewDocument } from "./ColumnDefinitions";
 
 // Register modules once
@@ -27,6 +28,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export default function ReviewDocumentsView() {
   const { data, error, isLoading, refetch } = useGetAll_review_documentsQuery();
   const [getReviewDoc, { isLoading: isDownloading }] = useGet_review_documentMutation();
+  const [returnReviewDoc, { isLoading: isReturning }] = useReturnReviewDocumentMutation();
 
   // Filter states
   const [searchText, setSearchText] = useState("");
@@ -37,6 +39,10 @@ export default function ReviewDocumentsView() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [downloadLoadingId, setDownloadLoadingId] = useState<string | null>(null);
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<ReviewDocument | null>(null);
 
   const gridRef = useRef<AgGridReact<ReviewDocument> | null>(null);
   const apiRef = useRef<GridApi | null>(null);
@@ -121,10 +127,72 @@ export default function ReviewDocumentsView() {
     });
   }, [data?.documents, searchText, orgFilter, projectFilter, docTypeFilter, statusFilter, startDate, endDate]);
 
-  // Column definitions with download handler
+  // Modal handlers
+  const handleViewDetails = useCallback((doc: ReviewDocument) => {
+    setSelectedDocument(doc);
+    setModalOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setModalOpen(false);
+    setSelectedDocument(null);
+  }, []);
+
+  const handleDownloadFromModal = useCallback(async () => {
+    if (!selectedDocument) return;
+
+    try {
+      const res = await getReviewDoc({
+        project_id: selectedDocument.project_id!,
+        document_type_uuid: selectedDocument.document_type_uuid!,
+      }).unwrap();
+
+      // Download file helper
+      const byteCharacters = atob(res.docxBase64);
+      const byteNumbers = Array.from({ length: byteCharacters.length }).map((_, i) =>
+        byteCharacters.charCodeAt(i)
+      );
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], {
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = res.filename ?? `${selectedDocument.document_type ?? "document"}.docx`;
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error("Download failed:", err);
+      throw err;
+    }
+  }, [selectedDocument, getReviewDoc]);
+
+  const handleReturnDocument = useCallback(async (data: {
+    project_id: string;
+    document_type_uuid: string;
+    feedback?: string;
+    document_text?: string;
+  }) => {
+    try {
+      await returnReviewDoc(data).unwrap();
+      // Refetch the documents list to get latest data
+      await refetch();
+    } catch (err) {
+      console.error("Return document failed:", err);
+      throw err;
+    }
+  }, [returnReviewDoc, refetch]);
+
+  // Column definitions with view details handler
   const columnDefs = useMemo(
-    () => getColumnDefinitions(getReviewDoc, isDownloading, downloadLoadingId, setDownloadLoadingId),
-    [getReviewDoc, isDownloading, downloadLoadingId]
+    () => getColumnDefinitions(
+      getReviewDoc,
+      isDownloading,
+      downloadLoadingId,
+      setDownloadLoadingId,
+      handleViewDetails
+    ),
+    [getReviewDoc, isDownloading, downloadLoadingId, handleViewDetails]
   );
 
   const defaultColDef = useMemo<ColDef>(
@@ -196,6 +264,17 @@ export default function ReviewDocumentsView() {
         filteredData={filteredData}
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
+      />
+
+      {/* Review Document Modal */}
+      <ReviewDocumentModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        document={selectedDocument}
+        onDownload={handleDownloadFromModal}
+        onReturnDocument={handleReturnDocument}
+        isDownloading={isDownloading}
+        isReturning={isReturning}
       />
     </Box>
   );

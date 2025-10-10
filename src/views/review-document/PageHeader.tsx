@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Box,
@@ -40,7 +39,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({ totalDocs, onRefresh, onExportC
             </Typography>
             <Typography variant="body2" color={theme.colors.text.muted}>
               Manage documents submitted for review — total{" "}
-              <strong style={{ color: theme.colors.primary }}>{totalDocs}</strong>
+              <Box component="span" sx={{ color: theme.colors.primary, fontWeight: theme.typography.fontWeight.semibold }}>
+                {totalDocs}
+              </Box>
             </Typography>
           </Box>
         </Box>
