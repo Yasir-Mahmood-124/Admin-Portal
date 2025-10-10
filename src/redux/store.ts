@@ -10,6 +10,7 @@ import { userOrganizationProjectsApi } from "./services/get_user_organization_pr
 import { balanceApi } from "./services/get-balance";
 import { recentActivityApi } from "./services/recent-activity";
 import { paymentHistoryApi } from "./services/payment-history";
+import { returnReviewDocumentApi } from "./services/return-review-document";
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
     [balanceApi.reducerPath]: balanceApi.reducer,
     [recentActivityApi.reducerPath]: recentActivityApi.reducer,
     [paymentHistoryApi.reducerPath]: paymentHistoryApi.reducer,
+    [returnReviewDocumentApi.reducerPath]: returnReviewDocumentApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -36,6 +38,7 @@ export const store = configureStore({
         balanceApi.middleware,
         recentActivityApi.middleware,
         paymentHistoryApi.middleware,
+        returnReviewDocumentApi.middleware,
     ),
 });
 
