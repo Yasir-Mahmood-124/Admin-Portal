@@ -9,6 +9,7 @@ import { organizationProjectsApi } from "./services/get_organization_projects";
 import { userOrganizationProjectsApi } from "./services/get_user_organization_project";
 import { balanceApi } from "./services/get-balance";
 import { recentActivityApi } from "./services/recent-activity";
+import { paymentHistoryApi } from "./services/payment-history";
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     [userOrganizationProjectsApi.reducerPath]: userOrganizationProjectsApi.reducer,
     [balanceApi.reducerPath]: balanceApi.reducer,
     [recentActivityApi.reducerPath]: recentActivityApi.reducer,
+    [paymentHistoryApi.reducerPath]: paymentHistoryApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -33,6 +35,7 @@ export const store = configureStore({
         userOrganizationProjectsApi.middleware,
         balanceApi.middleware,
         recentActivityApi.middleware,
+        paymentHistoryApi.middleware,
     ),
 });
 
