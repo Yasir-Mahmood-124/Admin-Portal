@@ -140,9 +140,14 @@ const ReviewDocumentModal: React.FC<ReviewDocumentModalProps> = ({
           pb: 2,
         }}
       >
-        <Typography variant="h6" fontWeight={theme.typography.fontWeight.bold}>
+        <Typography
+          variant="h6"
+          component="span"
+          fontWeight={theme.typography.fontWeight.bold}
+        >
           Review Document Details
         </Typography>
+
         <IconButton onClick={handleClose} size="small">
           <CloseIcon />
         </IconButton>
@@ -161,13 +166,25 @@ const ReviewDocumentModal: React.FC<ReviewDocumentModalProps> = ({
             border: `1px solid ${theme.colors.border.solid}`,
           }}
         >
-          <Typography variant="body2" color={theme.colors.text.muted} gutterBottom>
+          <Typography
+            variant="body2"
+            color={theme.colors.text.muted}
+            gutterBottom
+          >
             <strong>Organization:</strong> {document.organization_name || "—"}
           </Typography>
-          <Typography variant="body2" color={theme.colors.text.muted} gutterBottom>
+          <Typography
+            variant="body2"
+            color={theme.colors.text.muted}
+            gutterBottom
+          >
             <strong>Project:</strong> {document.project_name || "—"}
           </Typography>
-          <Typography variant="body2" color={theme.colors.text.muted} gutterBottom>
+          <Typography
+            variant="body2"
+            color={theme.colors.text.muted}
+            gutterBottom
+          >
             <strong>Document Type:</strong> {document.document_type || "—"}
           </Typography>
           <Typography variant="body2" color={theme.colors.text.muted}>
@@ -180,7 +197,9 @@ const ReviewDocumentModal: React.FC<ReviewDocumentModalProps> = ({
           <Button
             variant="outlined"
             fullWidth
-            startIcon={isDownloading ? <CircularProgress size={16} /> : <DownloadIcon />}
+            startIcon={
+              isDownloading ? <CircularProgress size={16} /> : <DownloadIcon />
+            }
             onClick={onDownload}
             disabled={isDownloading}
             sx={{
@@ -256,7 +275,11 @@ const ReviewDocumentModal: React.FC<ReviewDocumentModalProps> = ({
             />
           </Button>
           {uploadedFile && (
-            <Typography variant="caption" color={theme.colors.states.success} sx={{ mt: 1, display: "block" }}>
+            <Typography
+              variant="caption"
+              color={theme.colors.states.success}
+              sx={{ mt: 1, display: "block" }}
+            >
               File ready to upload: {uploadedFile.name}
             </Typography>
           )}
@@ -269,7 +292,10 @@ const ReviewDocumentModal: React.FC<ReviewDocumentModalProps> = ({
           </Alert>
         )}
         {success && (
-          <Alert severity="success" sx={{ mb: 2, borderRadius: theme.radii.md }}>
+          <Alert
+            severity="success"
+            sx={{ mb: 2, borderRadius: theme.radii.md }}
+          >
             {success}
           </Alert>
         )}
@@ -291,7 +317,9 @@ const ReviewDocumentModal: React.FC<ReviewDocumentModalProps> = ({
         <Button
           onClick={handleSubmit}
           variant="contained"
-          startIcon={isReturning ? <CircularProgress size={16} /> : <SendIcon />}
+          startIcon={
+            isReturning ? <CircularProgress size={16} /> : <SendIcon />
+          }
           disabled={isReturning || success !== ""}
           sx={{
             background: theme.colors.primary,
