@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Avatar, Button } from "@mui/material";
+import { Box, Typography, Avatar, Button, IconButton } from "@mui/material";
 import {
   BusinessRounded as BusinessIcon,
   Work as WorkIcon,
@@ -7,6 +7,7 @@ import {
   Description as DescriptionIcon,
   Event as EventIcon,
   GetApp as DownloadIcon,
+  Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import type { ColDef } from "ag-grid-community";
 import { theme } from "@/theme/theme";
@@ -28,7 +29,8 @@ export const getColumnDefinitions = (
   getReviewDoc: any,
   isDownloading: boolean,
   downloadLoadingId: string | null,
-  setDownloadLoadingId: (id: string | null) => void
+  setDownloadLoadingId: (id: string | null) => void,
+  onViewDetails: (doc: ReviewDocument) => void
 ): ColDef<ReviewDocument>[] => [
   {
     headerName: "Organization",
@@ -98,7 +100,7 @@ export const getColumnDefinitions = (
     field: "status",
     flex: 0.8,
     minWidth: 120,
-    filter: "agTextColumnFilter", // Changed from agSetColumnFilter (Enterprise only)
+    filter: "agTextColumnFilter",
     cellRenderer: (params: any) => {
       const v = (params.value ?? "").toLowerCase();
       const color =
@@ -144,8 +146,8 @@ export const getColumnDefinitions = (
   {
     headerName: "Actions",
     field: "document_type_uuid",
-    flex: 1,
-    minWidth: 150,
+    flex: 1.2,
+    minWidth: 180,
     sortable: false,
     filter: false,
     cellRenderer: (params: any) => {
@@ -185,22 +187,38 @@ export const getColumnDefinitions = (
       const loading = isDownloading && downloadLoadingId === uuid;
 
       return (
-        <Button
-          variant="contained"
-          size="small"
-          startIcon={<DownloadIcon />}
-          sx={{
-            background: theme.colors.primary,
-            color: theme.colors.text.inverse,
-            fontWeight: theme.typography.fontWeight.medium,
-            "&:hover": { background: theme.colors.secondary },
-            textTransform: "none",
-          }}
-          onClick={onClickDownload}
-          disabled={Boolean(loading)}
-        >
-          {loading ? "Downloading..." : "Download"}
-        </Button>
+        <Box display="flex" gap={1} alignItems="center">
+          <IconButton
+            size="small"
+            onClick={() => onViewDetails(params.data)}
+            sx={{
+              color: theme.colors.primary,
+              border: `1px solid ${theme.colors.border.solid}`,
+              "&:hover": {
+                background: "rgba(62, 162, 255, 0.08)",
+              },
+            }}
+          >
+            <VisibilityIcon fontSize="small" />
+          </IconButton>
+          
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<DownloadIcon />}
+            sx={{
+              background: theme.colors.primary,
+              color: theme.colors.text.inverse,
+              fontWeight: theme.typography.fontWeight.medium,
+              "&:hover": { background: theme.colors.secondary },
+              textTransform: "none",
+            }}
+            onClick={onClickDownload}
+            disabled={Boolean(loading)}
+          >
+            {loading ? "Downloading..." : "Download"}
+          </Button>
+        </Box>
       );
     },
   },
