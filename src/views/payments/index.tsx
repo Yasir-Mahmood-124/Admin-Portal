@@ -20,34 +20,6 @@ const PaymentsView: React.FC = () => {
       }}
     >
       <Container maxWidth="xl">
-        {/* Breadcrumbs */}
-        <Breadcrumbs
-          separator={<NavigateNext fontSize="small" />}
-          sx={{ mb: 3 }}
-        >
-          <Link
-            underline="hover"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              color: "#6B7280",
-              fontSize: "0.875rem",
-            }}
-            href="/admin"
-          >
-            <Dashboard sx={{ mr: 0.5, fontSize: 18 }} />
-            Dashboard
-          </Link>
-          <Typography
-            sx={{
-              color: "#111827",
-              fontSize: "0.875rem",
-              fontWeight: 600,
-            }}
-          >
-            Payments
-          </Typography>
-        </Breadcrumbs>
 
         {/* Page Header */}
         <Box sx={{ mb: 4 }}>

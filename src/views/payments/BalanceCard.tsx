@@ -1,44 +1,90 @@
+
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Box,
   Card,
   Typography,
   Stack,
   Skeleton,
+  Chip,
+  Avatar,
 } from "@mui/material";
 import {
   TrendingUp,
   AccountBalanceWallet,
   AccessTime,
+  Person,
+  Language,
+  Workspaces,
 } from "@mui/icons-material";
 import { useGetBalanceQuery } from "@/redux/services/get-balance";
+import { useGetPaymentHistoryQuery } from "@/redux/services/payment-history";
+import { theme } from "@/theme/theme";
 
 const BalanceCard: React.FC = () => {
-  const { data, error, isLoading } = useGetBalanceQuery();
+  const { data: balanceData, error, isLoading } = useGetBalanceQuery();
+  const { data: paymentData } = useGetPaymentHistoryQuery();
+
+  // Calculate statistics from payment data
+  const stats = useMemo(() => {
+    if (!paymentData?.data) return { totalCustomers: 0, uniqueCountries: 0, totalPlans: 0 };
+
+    const allRecords = Object.values(paymentData.data).flatMap((user: any) => user.records);
+    const uniqueEmails = new Set(allRecords.map((r: any) => r.email));
+    const uniqueCountries = new Set(allRecords.map((r: any) => r.country));
+    const uniquePlans = new Set(allRecords.map((r: any) => r.plan_name));
+
+    return {
+      totalCustomers: uniqueEmails.size,
+      uniqueCountries: uniqueCountries.size,
+      totalPlans: uniquePlans.size,
+    };
+  }, [paymentData]);
 
   const balanceItems = [
     {
       label: "Available Balance",
-      value: data?.available || "0.00 USD",
+      value: balanceData?.available || "0.00 USD",
       icon: <AccountBalanceWallet sx={{ fontSize: 24 }} />,
       gradient: "linear-gradient(135deg, #3EA2FF 0%, #5FB0FE 100%)",
       color: "#3EA2FF",
     },
     {
       label: "Pending Balance",
-      value: data?.pending || "0.00 USD",
+      value: balanceData?.pending || "0.00 USD",
       icon: <AccessTime sx={{ fontSize: 24 }} />,
       gradient: "linear-gradient(135deg, #FF3C80 0%, #FB5691 100%)",
       color: "#FF3C80",
     },
     {
       label: "Total Balance",
-      value: data?.total || "0.00 USD",
+      value: balanceData?.total || "0.00 USD",
       icon: <TrendingUp sx={{ fontSize: 24 }} />,
       gradient: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)",
       color: "#16A34A",
+    },
+  ];
+
+  const additionalStats = [
+    {
+      label: "Total Customers",
+      value: stats.totalCustomers,
+      icon: <Person sx={{ fontSize: 20 }} />,
+      color: "#0284C7",
+    },
+    {
+      label: "Countries",
+      value: stats.uniqueCountries,
+      icon: <Language sx={{ fontSize: 20 }} />,
+      color: "#7C3AED",
+    },
+    {
+      label: "Active Plans",
+      value: stats.totalPlans,
+      icon: <Workspaces sx={{ fontSize: 20 }} />,
+      color: "#CA8A04",
     },
   ];
 
@@ -47,7 +93,7 @@ const BalanceCard: React.FC = () => {
       <Card
         sx={{
           p: 3,
-          borderRadius: "1rem",
+          borderRadius: theme.radii.xl,
           background: "#FEF2F2",
           border: "1px solid #FCA5A5",
         }}
@@ -60,13 +106,13 @@ const BalanceCard: React.FC = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ mb: 3 }}>
       <Typography
         variant="h5"
         sx={{
           fontWeight: 700,
           mb: 3,
-          color: "#111827",
+          color: theme.colors.text.primary,
           letterSpacing: "-0.02em",
         }}
       >
@@ -76,7 +122,7 @@ const BalanceCard: React.FC = () => {
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={3}
-        sx={{ mb: 4 }}
+        sx={{ mb: 3 }}
       >
         {balanceItems.map((item, index) => (
           <Card
@@ -85,8 +131,8 @@ const BalanceCard: React.FC = () => {
               flex: 1,
               position: "relative",
               overflow: "hidden",
-              borderRadius: "1rem",
-              border: "1px solid #E5E7EB",
+              borderRadius: theme.radii.xl,
+              border: `1px solid ${theme.colors.border.solid}`,
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)",
               transition: "all 0.3s ease",
               "&:hover": {
@@ -130,7 +176,7 @@ const BalanceCard: React.FC = () => {
               <Typography
                 variant="body2"
                 sx={{
-                  color: "#6B7280",
+                  color: theme.colors.text.muted,
                   fontWeight: 500,
                   mb: 0.5,
                   fontSize: "0.875rem",
@@ -151,7 +197,7 @@ const BalanceCard: React.FC = () => {
                   variant="h4"
                   sx={{
                     fontWeight: 700,
-                    color: "#111827",
+                    color: theme.colors.text.primary,
                     letterSpacing: "-0.02em",
                   }}
                 >
@@ -160,6 +206,47 @@ const BalanceCard: React.FC = () => {
               )}
             </Box>
           </Card>
+        ))}
+      </Stack>
+
+      {/* Additional Statistics */}
+      <Stack direction="row" spacing={2} flexWrap="wrap">
+        {additionalStats.map((stat, index) => (
+          <Chip
+            key={index}
+            icon={
+              <Avatar
+                sx={{
+                  width: 24,
+                  height: 24,
+                  background: `${stat.color}20`,
+                  color: stat.color,
+                }}
+              >
+                {stat.icon}
+              </Avatar>
+            }
+            label={
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {stat.value}
+                </Typography>
+                <Typography variant="body2" sx={{ color: theme.colors.text.muted }}>
+                  {stat.label}
+                </Typography>
+              </Box>
+            }
+            sx={{
+              height: 40,
+              px: 2,
+              background: "#fff",
+              border: `1px solid ${theme.colors.border.solid}`,
+              borderRadius: theme.radii.lg,
+              "& .MuiChip-label": {
+                px: 1,
+              },
+            }}
+          />
         ))}
       </Stack>
     </Box>
