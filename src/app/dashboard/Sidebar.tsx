@@ -23,6 +23,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import PaymentIcon from "@mui/icons-material/Payment";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { theme } from "@/theme/theme";
 
 const drawerWidth = 260;
@@ -33,6 +35,7 @@ const menuItems = [
   { name: "Organizations", route: "/dashboard/organizations", icon: <BusinessIcon /> },
   { name: "Projects", route: "/dashboard/projects", icon: <WorkIcon /> },
   { name: "Review Documents", route: "/dashboard/review-documents", icon: <DescriptionIcon /> },
+  { name: "Payments", route: "/dashboard/payments", icon: <AttachMoneyIcon /> }
 ];
 
 export default function Sidebar() {
